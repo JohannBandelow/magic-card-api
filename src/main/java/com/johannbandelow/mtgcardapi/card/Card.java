@@ -1,16 +1,35 @@
 package com.johannbandelow.mtgcardapi.card;
 
+import com.johannbandelow.mtgcardapi.deck.Deck;
 import com.johannbandelow.mtgcardapi.enums.LanguageEnum;
 import com.johannbandelow.mtgcardapi.user.User;
 
+import javax.persistence.*;
+import java.util.Set;
+
+@Entity
+@Table(name = "CARDS")
 public class Card {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
     private LanguageEnum language;
+
     private Boolean isFoil;
+
     private Double price;
+
     private String expansionPack;
+
+    @ManyToMany(mappedBy = "cards")
+    private Set<Deck> decks;
 
     public Long getId() {
         return id;
@@ -66,5 +85,13 @@ public class Card {
 
     public void setExpansionPack(String expansionPack) {
         this.expansionPack = expansionPack;
+    }
+
+    public Set<Deck> getDecks() {
+        return decks;
+    }
+
+    public void setDecks(Set<Deck> decks) {
+        this.decks = decks;
     }
 }

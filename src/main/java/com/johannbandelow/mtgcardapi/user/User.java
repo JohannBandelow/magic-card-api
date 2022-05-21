@@ -1,17 +1,36 @@
 package com.johannbandelow.mtgcardapi.user;
 
+import com.johannbandelow.mtgcardapi.card.Card;
+import com.johannbandelow.mtgcardapi.deck.Deck;
+
+import javax.persistence.*;
+import java.util.Set;
+
+@Entity
 public class User {
-
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-    private String name;
-    private String email;
-    private String password;
 
-    public User(Long id, String name, String email, String password) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
+    private String name;
+
+    private String email;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Card> cards;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Deck> decks;
+
+    public User() {
+    }
+
+    public Set<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(Set<Card> cards) {
+        this.cards = cards;
     }
 
     public Long getId() {
@@ -22,7 +41,9 @@ public class User {
         this.id = id;
     }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -36,12 +57,12 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public Set<Deck> getDecks() {
+        return decks;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setDecks(Set<Deck> decks) {
+        this.decks = decks;
     }
 }
 
