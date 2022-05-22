@@ -18,21 +18,7 @@ public class User implements Serializable {
 
     private String email;
 
-    @OneToMany(mappedBy = "user")
-    private Set<Card> cards;
-
-    @OneToMany(mappedBy = "user")
-    private Set<Deck> decks;
-
     public User() {
-    }
-
-    public Set<Card> getCards() {
-        return cards;
-    }
-
-    public void setCards(Set<Card> cards) {
-        this.cards = cards;
     }
 
     public Long getId() {
@@ -57,14 +43,6 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Set<Deck> getDecks() {
-        return decks;
-    }
-
-    public void setDecks(Set<Deck> decks) {
-        this.decks = decks;
     }
 }
 

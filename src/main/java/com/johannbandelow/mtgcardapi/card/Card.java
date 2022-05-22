@@ -28,9 +28,6 @@ public class Card {
 
     private String expansionPack;
 
-    @ManyToMany(mappedBy = "cards")
-    private Set<Deck> decks;
-
     public Long getId() {
         return id;
     }
@@ -85,13 +82,5 @@ public class Card {
 
     public void setExpansionPack(String expansionPack) {
         this.expansionPack = expansionPack;
-    }
-
-    public Set<Deck> getDecks() {
-        return decks;
-    }
-
-    public void setDecks(Set<Deck> decks) {
-        this.decks = decks;
     }
 }

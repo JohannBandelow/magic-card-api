@@ -1,6 +1,7 @@
 package com.johannbandelow.mtgcardapi.card;
 
 import com.johannbandelow.mtgcardapi.enums.LanguageEnum;
+import com.johannbandelow.mtgcardapi.exceptions.NoCardFoundException;
 import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
 import com.johannbandelow.mtgcardapi.user.User;
 import com.johannbandelow.mtgcardapi.user.UserRepository;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CardService {
@@ -36,6 +38,7 @@ public class CardService {
     public Card addCardToUser(Long userId, Card card) {
         try {
             User user = userService.getUserById(userId);
+
             if (user == null) {
                 throw new NoUserFoundException("Usuário não encontrado, ID: " + userId);
             }
@@ -69,5 +72,17 @@ public class CardService {
         }
 
         return card;
+    }
+
+    public Card removeCard(Long cardId) throws NoCardFoundException {
+        Optional<Card> card = cardRepository.findById(cardId);
+
+        if(card.isEmpty()) {
+            throw new NoCardFoundException("Carta não encontrada, id:" + cardId);
+        }
+
+        cardRepository.deleteById(cardId);
+
+        return card.get();
     }
 }

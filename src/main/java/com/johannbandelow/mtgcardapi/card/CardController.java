@@ -1,5 +1,6 @@
 package com.johannbandelow.mtgcardapi.card;
 
+import com.johannbandelow.mtgcardapi.exceptions.NoCardFoundException;
 import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
 import com.johannbandelow.mtgcardapi.user.UserService;
 import org.apache.logging.log4j.LogManager;
@@ -39,5 +40,19 @@ public class CardController {
     public Card addCardToUser(@RequestParam Long userId, @RequestBody Card card) {
 
         return cardService.addCardToUser(userId, card);
+    }
+
+    @DeleteMapping(path = "/remove")
+    public ResponseEntity<?> removeCard(@RequestParam Long cardId) {
+        Card card = null;
+
+        try {
+            card = cardService.removeCard(cardId);
+        } catch (NoCardFoundException e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(card);
     }
 }
