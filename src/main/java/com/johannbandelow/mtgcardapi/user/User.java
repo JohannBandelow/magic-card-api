@@ -4,10 +4,12 @@ import com.johannbandelow.mtgcardapi.card.Card;
 import com.johannbandelow.mtgcardapi.deck.Deck;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
 
 @Entity
-public class User {
+@Table(name = "USERS")
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;

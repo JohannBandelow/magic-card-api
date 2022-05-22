@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -11,9 +12,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<User> getUsers(){
-        List<User> users = (List<User>) userRepository.findAll();
-        return users;
+    public List<User> getUsers() {
+        return (List<User>) userRepository.findAll();
     }
 
     public User createUser(User user) {
@@ -27,6 +27,12 @@ public class UserService {
         }
 
         if (user.getEmail() == null || user.getEmail().isBlank()) {
+            return null;
+        }
+
+        Optional<User> userByEmail = userRepository.findUserByEmail(user.getEmail());
+
+        if (userByEmail.isPresent()) {
             return null;
         }
 

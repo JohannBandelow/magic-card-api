@@ -23,15 +23,21 @@ public class CardService {
     @Autowired
     private CardRepository cardRepository;
 
-    public List<Card> getUserCards(Long userId) {
-        return null;
+    public List<Card> getUserCards(Long userId) throws NoUserFoundException {
+        User user = userService.getUserById(userId);
+
+        if (user == null) {
+            throw new NoUserFoundException("Usuário não encontrado, ID: " + userId);
+        }
+
+        return (List<Card>) cardRepository.findAll();
     }
 
     public Card addCardToUser(Long userId, Card card) {
         try {
             User user = userService.getUserById(userId);
             if (user == null) {
-                throw new NoUserFoundException();
+                throw new NoUserFoundException("Usuário não encontrado, ID: " + userId);
             }
 
             card.setUser(user);
