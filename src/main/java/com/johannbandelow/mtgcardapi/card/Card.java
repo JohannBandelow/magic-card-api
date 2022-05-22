@@ -63,12 +63,12 @@ public class Card {
         this.language = language;
     }
 
-    public Boolean getFoil() {
-        return isFoil;
+    public Boolean getIsFoil() {
+        return this.isFoil;
     }
 
-    public void setFoil(Boolean foil) {
-        isFoil = foil;
+    public void setIsFoil(Boolean isFoil) {
+        this.isFoil = isFoil;
     }
 
     public Double getPrice() {
