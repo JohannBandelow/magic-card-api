@@ -27,14 +27,20 @@ public class CardService {
     private CardRepository cardRepository;
 
     @Transactional
-    public List<Card> getUserCards(Long userId) throws NoUserFoundException {
+    public Optional<List<Card>> getUserCards(Long userId) throws NoUserFoundException {
         User user = userService.getUserById(userId);
 
         if (user == null) {
             throw new NoUserFoundException("Usuário não encontrado, ID: " + userId);
         }
 
-        return (List<Card>) cardRepository.findAll();
+        return cardRepository.findCardsByUser(userId);
+    }
+
+    @Transactional
+    public Optional<Card> getCardById(Long cardId) throws NoUserFoundException {
+
+        return cardRepository.findById(cardId);
     }
 
     @Transactional

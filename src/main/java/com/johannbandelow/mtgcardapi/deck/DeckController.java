@@ -1,6 +1,7 @@
 package com.johannbandelow.mtgcardapi.deck;
 
 import com.johannbandelow.mtgcardapi.exceptions.BadRequestException;
+import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,12 @@ public class DeckController {
 
     Logger logger = LogManager.getLogger(DeckController.class);
 
-    @PostMapping
-    public ResponseEntity<?> createDeck(@RequestBody Deck deck) {
+    @PostMapping(path = "/create")
+    public ResponseEntity<?> createDeck(@RequestBody DeckRequest request) {
         try {
-            Deck createdDeck = deckService.createDeck(deck);
+            Deck createdDeck = deckService.createDeck(request);
             return ResponseEntity.status(HttpStatus.OK).body(createdDeck);
-        } catch (BadRequestException e) {
+        } catch (BadRequestException | NoUserFoundException e) {
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

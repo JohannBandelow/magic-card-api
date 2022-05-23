@@ -10,8 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/card")
@@ -24,7 +26,7 @@ public class CardController {
 
     @GetMapping
     public ResponseEntity<?> getUserCards(@RequestParam Long userId) {
-        List<Card> cards;
+        Optional<List<Card>> cards;
 
         try {
             cards = cardService.getUserCards(userId);
@@ -33,7 +35,11 @@ public class CardController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(cards);
+        if (cards.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(cards.get());
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body("Nenhuma carta encontrada!");
     }
 
     @PostMapping(path = "/add")
