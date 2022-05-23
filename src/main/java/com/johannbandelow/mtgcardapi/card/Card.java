@@ -11,7 +11,7 @@ import java.util.Set;
 @Table(name = "CARDS")
 public class Card {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     private String name;

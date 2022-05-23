@@ -24,7 +24,7 @@ public class CardController {
 
     @GetMapping
     public ResponseEntity<?> getUserCards(@RequestParam Long userId) {
-        List<Card> cards = new ArrayList<>();
+        List<Card> cards;
 
         try {
             cards = cardService.getUserCards(userId);

@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,7 @@ public class CardService {
     @Autowired
     private CardRepository cardRepository;
 
+    @Transactional
     public List<Card> getUserCards(Long userId) throws NoUserFoundException {
         User user = userService.getUserById(userId);
 
@@ -35,6 +37,7 @@ public class CardService {
         return (List<Card>) cardRepository.findAll();
     }
 
+    @Transactional
     public Card addCardToUser(Long userId, Card card) {
         try {
             User user = userService.getUserById(userId);
@@ -74,6 +77,7 @@ public class CardService {
         return card;
     }
 
+    @Transactional
     public Card removeCard(Long cardId) throws NoCardFoundException {
         Optional<Card> card = cardRepository.findById(cardId);
 

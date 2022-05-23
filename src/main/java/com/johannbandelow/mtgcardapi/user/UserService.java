@@ -1,9 +1,9 @@
 package com.johannbandelow.mtgcardapi.user;
 
-import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +17,7 @@ public class UserService {
         return (List<User>) userRepository.findAll();
     }
 
+    @Transactional
     public User createUser(User user) {
 
         if (user == null) {
@@ -44,6 +45,7 @@ public class UserService {
         return userRepository.findById(userId);
     }
 
+    @Transactional
     public User getUserByEmail(String email) {
         Optional<User> user = userRepository.findUserByEmail(email);
 
