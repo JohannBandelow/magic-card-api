@@ -3,6 +3,7 @@ package com.johannbandelow.mtgcardapi.deck;
 import com.johannbandelow.mtgcardapi.card.Card;
 import com.johannbandelow.mtgcardapi.card.CardService;
 import com.johannbandelow.mtgcardapi.exceptions.BadRequestException;
+import com.johannbandelow.mtgcardapi.exceptions.NoDeckFoundException;
 import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
 import com.johannbandelow.mtgcardapi.user.User;
 import com.johannbandelow.mtgcardapi.user.UserService;
@@ -13,8 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class DeckService {
@@ -36,6 +36,8 @@ public class DeckService {
 
         if (request.getName() == null || request.getName().isBlank()) {
             throw new BadRequestException("Nome do deck não enviado!");
+        } else {
+            deck.setName(request.getName());
         }
 
         if (request.getUserId() == null) {
@@ -45,16 +47,34 @@ public class DeckService {
         User user = userService.getUserById(request.getUserId());
         if (user == null) {
             throw new NoUserFoundException("Usuário não encontrado, id:" + request.getUserId());
+        } else {
+            deck.setUser(user);
         }
 
         if(!request.getCards().isEmpty()) {
+            Set<Card> cards = new HashSet<Card>();
             for (Integer cardId : request.getCards()) {
-                Optional<Card> card = cardService.getCardById(Long.valueOf(cardId));
-                card.ifPresent(value -> deck.getCards().add(value));
+                Optional<Card> card = cardService.getCardByIdAndUser(Long.valueOf(cardId), request.getUserId());
+                if (card.isPresent()) {
+                    if (deck.getCards() == null) {
+                        cards.add(card.get());
+                    }
+                }
             }
+            deck.setCards(cards);
         }
 
         return deckRepository.save(deck);
+    }
+
+    public Deck getDeckById(Long deckId) throws NoDeckFoundException {
+        Optional<Deck> optionalDeck = deckRepository.findById(deckId);
+
+        if (optionalDeck.isPresent()) {
+            return optionalDeck.get();
+        } else {
+            throw new NoDeckFoundException("Nenhum deck encontrado, id: " + deckId);
+        }
     }
 
     @Transactional

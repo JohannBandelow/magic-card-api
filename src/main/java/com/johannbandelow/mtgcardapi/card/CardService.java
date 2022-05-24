@@ -6,6 +6,7 @@ import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
 import com.johannbandelow.mtgcardapi.user.User;
 import com.johannbandelow.mtgcardapi.user.UserRepository;
 import com.johannbandelow.mtgcardapi.user.UserService;
+import com.sun.java.accessibility.util.Translator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class CardService {
     @Transactional
     public Optional<Card> getCardById(Long cardId) throws NoUserFoundException {
 
-        return cardRepository.findById(cardId);
+        return cardRepository.findById(Math.toIntExact(cardId));
     }
 
     @Transactional
@@ -53,7 +54,7 @@ public class CardService {
             }
 
             card.setUser(user);
-            card = this.validateCard(card);
+            card = this.processCard(card);
 
             return cardRepository.save(card);
         } catch (Exception e) {
@@ -63,7 +64,7 @@ public class CardService {
         return null;
     }
 
-    private Card validateCard(Card card) throws Exception {
+    private Card processCard(Card card) throws Exception {
         if (card == null) { throw new Exception();}
 
         if (card.getUser() == null)  { throw new Exception(); }
@@ -94,5 +95,10 @@ public class CardService {
         cardRepository.deleteById(cardId);
 
         return card.get();
+    }
+
+    public Optional<Card> getCardByIdAndUser(Long cardId, Long userId) {
+
+        return cardRepository.findAllByIdAndUser(cardId, userId);
     }
 }

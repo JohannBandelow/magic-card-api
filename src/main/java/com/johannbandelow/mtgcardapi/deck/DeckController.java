@@ -1,6 +1,7 @@
 package com.johannbandelow.mtgcardapi.deck;
 
 import com.johannbandelow.mtgcardapi.exceptions.BadRequestException;
+import com.johannbandelow.mtgcardapi.exceptions.NoDeckFoundException;
 import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,10 +32,23 @@ public class DeckController {
         }
     }
 
-    @GetMapping
+    @GetMapping(path = "/list")
     public ResponseEntity<?> listDecks() {
         List<Deck> decks = deckService.listDecks();
 
         return ResponseEntity.status(HttpStatus.OK).body(decks);
     }
+
+    @GetMapping
+    public ResponseEntity<?> getDeckById(@RequestParam Long deckId) {
+        try {
+            Deck deck = deckService.getDeckById(deckId);
+
+            return ResponseEntity.status(HttpStatus.OK).body(deck);
+        } catch (NoDeckFoundException e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 }
