@@ -1,6 +1,7 @@
 package com.johannbandelow.mtgcardapi.card;
 
 import com.johannbandelow.mtgcardapi.enums.LanguageEnum;
+import com.johannbandelow.mtgcardapi.exceptions.BadRequestException;
 import com.johannbandelow.mtgcardapi.exceptions.NoCardFoundException;
 import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
 import com.johannbandelow.mtgcardapi.user.User;
@@ -28,12 +29,8 @@ public class CardService {
     private CardRepository cardRepository;
 
     @Transactional
-    public Optional<List<Card>> getUserCards(Long userId) throws NoUserFoundException {
+    public Optional<List<Card>> getUserCards(Long userId) throws NoUserFoundException, BadRequestException {
         User user = userService.getUserById(userId);
-
-        if (user == null) {
-            throw new NoUserFoundException("Usuário não encontrado, ID: " + userId);
-        }
 
         return cardRepository.findCardsByUser(userId);
     }

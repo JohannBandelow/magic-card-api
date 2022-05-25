@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface UserRepository extends CrudRepository<User, Integer> {
 
-    User findById(Long userId);
+    Optional<User> findById(Long userId);
 
     @Query(value = "SELECT u FROM User u WHERE u.email LIKE :email")
     Optional<User> findUserByEmail(@Param("email") String email);

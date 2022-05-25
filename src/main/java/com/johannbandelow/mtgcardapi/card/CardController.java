@@ -30,7 +30,7 @@ public class CardController {
 
         try {
             cards = cardService.getUserCards(userId);
-        } catch (NoUserFoundException e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

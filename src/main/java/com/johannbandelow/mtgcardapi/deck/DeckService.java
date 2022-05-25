@@ -81,4 +81,13 @@ public class DeckService {
     public List<Deck> listDecks() {
         return (List<Deck>) deckRepository.findAll();
     }
+
+    @Transactional
+    public Deck editDeck(DeckRequest deckRequest) throws NoUserFoundException, BadRequestException {
+        User user = userService.getUserById(deckRequest.getUserId());
+
+        Optional<Deck> deck = deckRepository.findById(deckRequest.getId());
+
+        return deck.get();
+    }
 }

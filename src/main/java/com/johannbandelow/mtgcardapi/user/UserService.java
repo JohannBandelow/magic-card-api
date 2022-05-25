@@ -1,5 +1,7 @@
 package com.johannbandelow.mtgcardapi.user;
 
+import com.johannbandelow.mtgcardapi.exceptions.BadRequestException;
+import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,8 +43,19 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User getUserById(Long userId) {
-        return userRepository.findById(userId);
+    public User getUserById(Long userId) throws NoUserFoundException, BadRequestException {
+
+        if (userId == null) {
+            throw new BadRequestException("ID do usuário não enviado");
+        }
+
+        Optional<User> user = userRepository.findById(userId);
+
+        if (user.isPresent()) {
+            return user.get();
+        }
+
+        throw new NoUserFoundException("Não foi encontrado nenhum usuário, id:" + userId);
     }
 
     @Transactional
