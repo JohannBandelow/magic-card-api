@@ -49,16 +49,34 @@ public class CardController {
     }
 
     @DeleteMapping(path = "/remove")
-    public ResponseEntity<?> removeCard(@RequestParam Long cardId) {
+    public ResponseEntity<?> removeCard(@RequestParam Long cardId, @RequestParam Long userId) {
         Card card = null;
 
         try {
-            card = cardService.removeCard(cardId);
-        } catch (NoCardFoundException e) {
+            card = cardService.removeCard(cardId, userId);
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(card);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getCardById(@RequestParam Long cardId) {
+        Optional<Card> card;
+
+        try {
+            card = cardService.getCardById(cardId);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
+        if (card.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(card.get());
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body("Nenhuma carta encontrada!");
     }
 }

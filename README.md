@@ -2,13 +2,12 @@
 This is a simple API to register your Magic! The game cards, you can also create different decks and compare your cards to other players cards.
 
 ## TODO LIST:
-- Add userId verification on deleting a card from userId
 - Add String translation on saving a foreign card
-- Add route to get card, from card Id
-- Add route to list all cards,
 - Add route to list other user decks and order the search by parameter
 - Add route to edit a deck
-- Fazer deploy na nuvem
+- Deploy on cloud-service
+- Add API KEY and other security features
+- Extrair todas as Strings para um arquivo só
 
 ## To use this API, first you need to configure your MySQL database:
 To create DB simply access your MySQL console, then:

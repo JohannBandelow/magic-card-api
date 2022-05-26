@@ -1,6 +1,8 @@
 package com.johannbandelow.mtgcardapi.deck;
 
 import com.johannbandelow.mtgcardapi.card.Card;
+import com.johannbandelow.mtgcardapi.enums.SortTypeEnum;
+
 import java.util.Set;
 
 public class DeckRequest {
@@ -8,6 +10,7 @@ public class DeckRequest {
     private String name;
     private Long userId;
     private Set<Integer> cards;
+    private SortTypeEnum sortType;
 
     public Long getId() {
         return id;
@@ -39,5 +42,13 @@ public class DeckRequest {
 
     public void setCards(Set<Integer> cards) {
         this.cards = cards;
+    }
+
+    public SortTypeEnum getSortType() {
+        return sortType;
+    }
+
+    public void setSortType(SortTypeEnum sortType) {
+        this.sortType = sortType;
     }
 }

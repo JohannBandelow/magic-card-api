@@ -40,12 +40,12 @@ public class DeckController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getDeckById(@RequestParam Long deckId) {
+    public ResponseEntity<?> getDeck(@RequestBody DeckRequest request) {
         try {
-            Deck deck = deckService.getDeckById(deckId);
+            Deck deck = deckService.getDeckById(request);
 
             return ResponseEntity.status(HttpStatus.OK).body(deck);
-        } catch (NoDeckFoundException e) {
+        } catch (Exception e) {
             logger.error(e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

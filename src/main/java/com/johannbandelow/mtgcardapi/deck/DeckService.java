@@ -2,6 +2,7 @@ package com.johannbandelow.mtgcardapi.deck;
 
 import com.johannbandelow.mtgcardapi.card.Card;
 import com.johannbandelow.mtgcardapi.card.CardService;
+import com.johannbandelow.mtgcardapi.enums.SortTypeEnum;
 import com.johannbandelow.mtgcardapi.exceptions.BadRequestException;
 import com.johannbandelow.mtgcardapi.exceptions.NoDeckFoundException;
 import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
@@ -12,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import java.util.*;
 
@@ -67,14 +67,26 @@ public class DeckService {
         return deckRepository.save(deck);
     }
 
-    public Deck getDeckById(Long deckId) throws NoDeckFoundException {
-        Optional<Deck> optionalDeck = deckRepository.findById(deckId);
+    public Deck getDeckById(DeckRequest deck) throws NoDeckFoundException, BadRequestException {
+
+        if (deck.getId() == null) {
+            throw new BadRequestException("ID do deck não enviado!");
+        }
+
+        Optional<Deck> optionalDeck = deckRepository.findById(deck.getId());
 
         if (optionalDeck.isPresent()) {
-            return optionalDeck.get();
+            return this.sortCards(optionalDeck.get());
         } else {
-            throw new NoDeckFoundException("Nenhum deck encontrado, id: " + deckId);
+            throw new NoDeckFoundException("Nenhum deck encontrado, id: " + deck.getId());
         }
+    }
+
+    private Deck sortCards(Deck deck) {
+
+        //TODO: implement sorting algorithm
+
+        return deck;
     }
 
     @Transactional

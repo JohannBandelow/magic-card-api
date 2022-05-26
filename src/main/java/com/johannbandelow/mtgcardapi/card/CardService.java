@@ -4,10 +4,9 @@ import com.johannbandelow.mtgcardapi.enums.LanguageEnum;
 import com.johannbandelow.mtgcardapi.exceptions.BadRequestException;
 import com.johannbandelow.mtgcardapi.exceptions.NoCardFoundException;
 import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
+import com.johannbandelow.mtgcardapi.exceptions.PermissionUnallowedException;
 import com.johannbandelow.mtgcardapi.user.User;
-import com.johannbandelow.mtgcardapi.user.UserRepository;
 import com.johannbandelow.mtgcardapi.user.UserService;
-import com.sun.java.accessibility.util.Translator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,11 +81,15 @@ public class CardService {
     }
 
     @Transactional
-    public Card removeCard(Long cardId) throws NoCardFoundException {
+    public Card removeCard(Long cardId, Long userId) throws NoCardFoundException, PermissionUnallowedException {
         Optional<Card> card = cardRepository.findById(cardId);
 
-        if(card.isEmpty()) {
+        if (card.isEmpty()) {
             throw new NoCardFoundException("Carta não encontrada, id:" + cardId);
+        }
+
+        if (!card.get().getUser().getId().equals(userId)) {
+            throw new PermissionUnallowedException("Você não pode remover a carta de outro jogador!");
         }
 
         cardRepository.deleteById(cardId);
