@@ -32,12 +32,12 @@ public class DeckController {
         }
     }
 
-    @GetMapping(path = "/list")
-    public ResponseEntity<?> listDecks() {
-        List<Deck> decks = deckService.listDecks();
-
-        return ResponseEntity.status(HttpStatus.OK).body(decks);
-    }
+//    @GetMapping(path = "/list")
+//    public ResponseEntity<?> listDecks() {
+//        List<Deck> decks = deckService.listDecks();
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(decks);
+//    }
 
     @GetMapping
     public ResponseEntity<?> getDeck(@RequestBody DeckRequest request) {

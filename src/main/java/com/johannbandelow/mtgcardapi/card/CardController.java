@@ -62,7 +62,7 @@ public class CardController {
         return ResponseEntity.status(HttpStatus.OK).body(card);
     }
 
-    @GetMapping
+    @GetMapping("/id")
     public ResponseEntity<?> getCardById(@RequestParam Long cardId) {
         Optional<Card> card;
 

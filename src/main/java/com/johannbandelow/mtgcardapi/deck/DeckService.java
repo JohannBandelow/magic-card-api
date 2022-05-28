@@ -6,6 +6,9 @@ import com.johannbandelow.mtgcardapi.enums.SortTypeEnum;
 import com.johannbandelow.mtgcardapi.exceptions.BadRequestException;
 import com.johannbandelow.mtgcardapi.exceptions.NoDeckFoundException;
 import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
+import com.johannbandelow.mtgcardapi.sorter.AlphabeticalSorter;
+import com.johannbandelow.mtgcardapi.sorter.PriceSorter;
+import com.johannbandelow.mtgcardapi.sorter.SorterService;
 import com.johannbandelow.mtgcardapi.user.User;
 import com.johannbandelow.mtgcardapi.user.UserService;
 import org.apache.logging.log4j.LogManager;
@@ -30,6 +33,9 @@ public class DeckService {
     @Autowired
     private DeckRepository deckRepository;
 
+    @Autowired
+    private SorterService sorterService;
+
     @Transactional
     public Deck createDeck(DeckRequest request) throws BadRequestException, NoUserFoundException {
         Deck deck = new Deck();
@@ -52,7 +58,7 @@ public class DeckService {
         }
 
         if(!request.getCards().isEmpty()) {
-            Set<Card> cards = new HashSet<Card>();
+            List<Card> cards = new ArrayList<Card>();
             for (Integer cardId : request.getCards()) {
                 Optional<Card> card = cardService.getCardByIdAndUser(Long.valueOf(cardId), request.getUserId());
                 if (card.isPresent()) {
@@ -67,31 +73,26 @@ public class DeckService {
         return deckRepository.save(deck);
     }
 
-    public Deck getDeckById(DeckRequest deck) throws NoDeckFoundException, BadRequestException {
-
-        if (deck.getId() == null) {
+    public Deck getDeckById(DeckRequest request) throws NoDeckFoundException, BadRequestException {
+        if (request.getId() == null) {
             throw new BadRequestException("ID do deck não enviado!");
         }
 
-        Optional<Deck> optionalDeck = deckRepository.findById(deck.getId());
+        Optional<Deck> optionalDeck = deckRepository.findById(request.getId());
 
         if (optionalDeck.isPresent()) {
-            return this.sortCards(optionalDeck.get());
+            Deck deck = optionalDeck.get();
+
+            if (request.getSortType().equals(SortTypeEnum.VALUE)) {
+                deck.setCards(sorterService.sortCards(deck.getCards(), new PriceSorter()));
+            } else {
+                deck.setCards(sorterService.sortCards(deck.getCards(), new AlphabeticalSorter()));
+            }
+
+            return deck;
         } else {
-            throw new NoDeckFoundException("Nenhum deck encontrado, id: " + deck.getId());
+            throw new NoDeckFoundException("Nenhum deck encontrado, id: " + request.getId());
         }
-    }
-
-    private Deck sortCards(Deck deck) {
-
-        //TODO: implement sorting algorithm
-
-        return deck;
-    }
-
-    @Transactional
-    public List<Deck> listDecks() {
-        return (List<Deck>) deckRepository.findAll();
     }
 
     @Transactional

@@ -9,7 +9,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "CARDS")
-public class Card {
+public class Card implements Comparable<Card>{
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -82,5 +83,10 @@ public class Card {
 
     public void setExpansionPack(String expansionPack) {
         this.expansionPack = expansionPack;
+    }
+
+    @Override
+    public int compareTo(Card card) {
+        return this.getName().compareTo(card.getName());
     }
 }
