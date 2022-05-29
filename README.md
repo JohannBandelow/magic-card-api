@@ -2,11 +2,8 @@
 This is a simple API to register your Magic! The game cards, you can also create different decks and compare your cards to other players cards.
 
 ## TODO LIST:
-- Extract strings to Constant file
-
 - Add String translation on saving a foreign card
 - Deploy on cloud-service
-- Add API KEY and other security features
 
 ## To use this API, first you need to configure your MySQL database:
 To create DB simply access your MySQL console, then:

@@ -48,8 +48,8 @@ public class CardController {
         }
     }
 
-    @DeleteMapping(path = "/remove/{cardId}/{userId}")
-    public ResponseEntity<?> removeCard(@PathVariable Long cardId, @PathVariable Long userId) {
+    @DeleteMapping(path = "/remove/{cardId}")
+    public ResponseEntity<?> removeCard(@PathVariable Long cardId, @RequestParam Long userId) {
         try {
             return ResponseEntity
                     .status(HttpStatus.OK)

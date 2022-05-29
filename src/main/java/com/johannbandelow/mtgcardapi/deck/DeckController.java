@@ -34,12 +34,13 @@ public class DeckController {
     }
 
     @GetMapping(path = "/list")
-    public ResponseEntity<?> listDecks() {
+    public ResponseEntity<?> listDecks(@RequestParam(defaultValue = "20") Integer deckQuantity,
+                                       @RequestParam(defaultValue = "0") Integer page) {
         try {
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(deckService.listDecks());
-        } catch (NoDeckFoundException e) {
+                    .body(deckService.listDecks(deckQuantity, page));
+        } catch (NoDeckFoundException | BadRequestException e) {
             logger.error(e.getMessage());
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)

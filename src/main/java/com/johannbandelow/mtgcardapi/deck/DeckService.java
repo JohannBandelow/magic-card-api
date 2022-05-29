@@ -12,9 +12,11 @@ import com.johannbandelow.mtgcardapi.user.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.awt.print.Pageable;
 import java.util.*;
 
 @Service
@@ -104,7 +106,11 @@ public class DeckService {
         }
     }
 
-    public List<Deck> listDecks() throws NoDeckFoundException {
-        return deckRepository.findAllDecks().orElseThrow(NoDeckFoundException::new);
+    public List<Deck> listDecks(Integer deckQuantity, Integer page) throws NoDeckFoundException, BadRequestException {
+        if (deckQuantity > 20) {
+            throw new BadRequestException("Por questões de performance, não é possível requisitar mais de 20 decks ao mesmo tempo! Use a paginação!");
+        }
+
+        return deckRepository.findAllDecks(PageRequest.of(page, deckQuantity)).orElseThrow(NoDeckFoundException::new);
     }
 }
