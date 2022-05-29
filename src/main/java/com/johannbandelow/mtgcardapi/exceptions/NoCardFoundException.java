@@ -7,4 +7,12 @@ public class NoCardFoundException extends Exception {
         super(errorMessage);
     }
 
+    public NoCardFoundException() {
+        super("Nenhuma carta encontrada!");
+    }
+
+    public NoCardFoundException(Long id) {
+        super("Nenhuma carta encontrada com o ID: " + id);
+    }
+
 }

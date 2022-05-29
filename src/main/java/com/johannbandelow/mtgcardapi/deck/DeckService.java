@@ -59,7 +59,7 @@ public class DeckService {
         }
         Deck deck = deckRepository
                 .findById(deckId)
-                .orElseThrow(() -> new NoDeckFoundException("Nenhum deck encontrado com o ID passado! ID: " + deckId));
+                .orElseThrow(() -> new NoDeckFoundException(deckId));
 
         if (sortTypeEnum != null && sortTypeEnum.equals(SortTypeEnum.VALUE)) {
             deck.setCards(sorterService.sortCards(deck.getCards(), new PriceSorter()));
@@ -71,12 +71,12 @@ public class DeckService {
     }
 
     @Transactional
-    public Deck editDeck(DeckRequest deckRequest) throws NoUserFoundException, BadRequestException, NoCardFoundException, PermissionUnallowedException {
+    public Deck editDeck(DeckRequest deckRequest) throws NoUserFoundException, BadRequestException, PermissionUnallowedException, NoDeckFoundException {
         User user = userService.getUserById(deckRequest.getUserId());
 
         Deck deck = deckRepository
                 .findById(deckRequest.getId())
-                .orElseThrow(() -> new NoCardFoundException("Nenhumca carta encontrada com o id: " + deckRequest.getId()));
+                .orElseThrow(() -> new NoDeckFoundException(deckRequest.getId()));
 
         if (!user.getId().equals(deck.getUser().getId())) {
             throw new PermissionUnallowedException("Você não tem permissão para editar o deck de outro usuário");
@@ -105,6 +105,6 @@ public class DeckService {
     }
 
     public List<Deck> listDecks() throws NoDeckFoundException {
-        return deckRepository.findAllDecks().orElseThrow(() -> new NoDeckFoundException("Nenhum deck encontrado!"));
+        return deckRepository.findAllDecks().orElseThrow(NoDeckFoundException::new);
     }
 }

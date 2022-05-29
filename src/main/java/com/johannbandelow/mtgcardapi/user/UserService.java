@@ -54,7 +54,7 @@ public class UserService {
 
         return userRepository
                 .findById(userId)
-                .orElseThrow(() -> new NoUserFoundException("Nenhum usuário encontrado! id: " + userId));
+                .orElseThrow(() -> new NoUserFoundException(userId));
     }
 
     @Transactional

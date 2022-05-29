@@ -69,7 +69,7 @@ public class DeckController {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(deckService.editDeck(request));
-        } catch (BadRequestException | NoUserFoundException | NoCardFoundException | PermissionUnallowedException e) {
+        } catch (BadRequestException | NoUserFoundException | NoDeckFoundException | PermissionUnallowedException e) {
             logger.error(e.getMessage());
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

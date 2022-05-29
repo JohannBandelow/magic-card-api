@@ -1,5 +1,6 @@
 package com.johannbandelow.mtgcardapi.card;
 
+import com.johannbandelow.mtgcardapi.exceptions.BadRequestException;
 import com.johannbandelow.mtgcardapi.exceptions.NoCardFoundException;
 import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
 import com.johannbandelow.mtgcardapi.user.UserService;
@@ -39,8 +40,12 @@ public class CardController {
     }
 
     @PostMapping(path = "/add")
-    public Card addCardToUser(@RequestParam Long userId, @RequestBody Card card) {
-        return cardService.addCardToUser(userId, card);
+    public ResponseEntity<?> addCardToUser(@RequestParam Long userId, @RequestBody Card card) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(cardService.addCardToUser(userId, card));
+        } catch (NoUserFoundException | BadRequestException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @DeleteMapping(path = "/remove/{cardId}/{userId}")

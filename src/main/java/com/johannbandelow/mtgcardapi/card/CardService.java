@@ -31,7 +31,9 @@ public class CardService {
     public List<Card> getUserCards(Long userId) throws NoUserFoundException, BadRequestException, NoCardFoundException {
         User user = userService.getUserById(userId);
 
-        return cardRepository.findCardsByUser(userId).orElseThrow(() -> new NoCardFoundException("Nenhuma carta encontrada para o usuário: " + userId));
+        return cardRepository
+                .findCardsByUser(userId)
+                .orElseThrow(() -> new NoCardFoundException("Nenhuma carta encontrada para o usuário: " + userId));
     }
 
     @Transactional
@@ -39,37 +41,35 @@ public class CardService {
 
         return cardRepository
                 .findById(cardId)
-                .orElseThrow(() -> new NoCardFoundException("Carta não encontrada, id: " + cardId));
+                .orElseThrow(() -> new NoCardFoundException(cardId));
     }
 
     @Transactional
-    public Card addCardToUser(Long userId, Card card) {
-        try {
-            User user = userService.getUserById(userId);
+    public Card addCardToUser(Long userId, Card card) throws NoUserFoundException, BadRequestException {
+        User user = userService.getUserById(userId);
 
-            if (user == null) {
-                throw new NoUserFoundException("Usuário não encontrado, ID: " + userId);
-            }
+        card.setUser(user);
+        card = this.processCard(card);
 
-            card.setUser(user);
-            card = this.processCard(card);
-
-            return cardRepository.save(card);
-        } catch (Exception e) {
-              logger.error(e.getMessage(), e);
-        }
-
-        return null;
+        return cardRepository.save(card);
     }
 
-    private Card processCard(Card card) throws Exception {
-        if (card == null) { throw new Exception();}
+    private Card processCard(Card card) throws BadRequestException {
+        if (card == null) {
+            throw new BadRequestException("Carta não enviada!");
+        }
 
-        if (card.getUser() == null)  { throw new Exception(); }
+        if (card.getUser() == null) {
+            throw new BadRequestException("Usuário não encontrado!");
+        }
 
-        if (card.getExpansionPack() == null || card.getExpansionPack().isEmpty()) { throw new Exception(); }
+        if (card.getExpansionPack() == null || card.getExpansionPack().isEmpty()) {
+            throw new BadRequestException("ExpansionPack não enviado!");
+        }
 
-        if (card.getName() == null || card.getName().isEmpty()) { throw new Exception(); }
+        if (card.getName() == null || card.getName().isEmpty()) {
+            throw new BadRequestException("Nome da carta não enviada!");
+        }
 
         if (card.getLanguage() == null) {
             card.setLanguage(LanguageEnum.PORTUGUESE);
@@ -84,7 +84,7 @@ public class CardService {
 
     @Transactional
     public Card removeCard(Long cardId, Long userId) throws NoCardFoundException, PermissionUnallowedException {
-        Card card = cardRepository.findById(cardId).orElseThrow(() -> new NoCardFoundException("Carta não encontrada! id: " + cardId));
+        Card card = cardRepository.findById(cardId).orElseThrow(() -> new NoCardFoundException(cardId));
 
         if (!card.getUser().getId().equals(userId)) {
             throw new PermissionUnallowedException("Você não pode remover a carta de outro jogador!");
@@ -95,7 +95,6 @@ public class CardService {
     }
 
     public Card getCardByIdAndUser(Long cardId, Long userId) throws NoCardFoundException {
-
         return cardRepository
                 .findByIdAndUser(cardId, userId)
                 .orElseThrow(() -> new NoCardFoundException("Nenhuma carta encontrada para o userId:" + userId + "e com o ID: " + cardId));
