@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface DeckRepository extends CrudRepository<Deck, Integer> {
 
-    @Query(name = "SELECT d FROM Deck d WHERE id = :deckId")
+    @Query(value = "SELECT d FROM Deck d WHERE id = :deckId")
     Optional<Deck> findById(@Param("deckId") Long deckId);
 
-    @Query(name = "SELECT d FROM Deck d")
-    Optional<List<Deck>> listAll();
+    @Query(value = "SELECT d FROM Deck d WHERE name IS NOT NULL")
+    Optional<List<Deck>> findAllDecks();
 }

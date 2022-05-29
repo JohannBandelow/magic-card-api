@@ -1,9 +1,7 @@
 package com.johannbandelow.mtgcardapi.deck;
 
 import com.johannbandelow.mtgcardapi.enums.SortTypeEnum;
-import com.johannbandelow.mtgcardapi.exceptions.BadRequestException;
-import com.johannbandelow.mtgcardapi.exceptions.NoDeckFoundException;
-import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
+import com.johannbandelow.mtgcardapi.exceptions.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +55,21 @@ public class DeckController {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(deck);
-        } catch (Exception e) {
+        } catch (NoDeckFoundException | BadRequestException e) {
+            logger.error(e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/edit")
+    public ResponseEntity<?> editDeck(@RequestBody DeckRequest request) {
+        try {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(deckService.editDeck(request));
+        } catch (BadRequestException | NoUserFoundException | NoCardFoundException | PermissionUnallowedException e) {
             logger.error(e.getMessage());
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

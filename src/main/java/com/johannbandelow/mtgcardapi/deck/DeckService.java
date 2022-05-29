@@ -3,10 +3,7 @@ package com.johannbandelow.mtgcardapi.deck;
 import com.johannbandelow.mtgcardapi.card.Card;
 import com.johannbandelow.mtgcardapi.card.CardService;
 import com.johannbandelow.mtgcardapi.enums.SortTypeEnum;
-import com.johannbandelow.mtgcardapi.exceptions.BadRequestException;
-import com.johannbandelow.mtgcardapi.exceptions.NoCardFoundException;
-import com.johannbandelow.mtgcardapi.exceptions.NoDeckFoundException;
-import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
+import com.johannbandelow.mtgcardapi.exceptions.*;
 import com.johannbandelow.mtgcardapi.sorter.AlphabeticalSorter;
 import com.johannbandelow.mtgcardapi.sorter.PriceSorter;
 import com.johannbandelow.mtgcardapi.sorter.SorterService;
@@ -50,13 +47,7 @@ public class DeckService {
         deck.setUser(userService.getUserById(request.getUserId()));
 
         if (!request.getCards().isEmpty()) {
-            for (Integer cardId : request.getCards()) {
-                try {
-                    deck.addCard(cardService.getCardByIdAndUser(Long.valueOf(cardId), request.getUserId()));
-                } catch (NoCardFoundException e) {
-                    logger.error(e.getMessage());
-                }
-            }
+            this.placeCards(deck, request);
         }
 
         return deckRepository.save(deck);
@@ -80,15 +71,40 @@ public class DeckService {
     }
 
     @Transactional
-    public Deck editDeck(DeckRequest deckRequest) throws NoUserFoundException, BadRequestException {
+    public Deck editDeck(DeckRequest deckRequest) throws NoUserFoundException, BadRequestException, NoCardFoundException, PermissionUnallowedException {
         User user = userService.getUserById(deckRequest.getUserId());
 
-        Optional<Deck> deck = deckRepository.findById(deckRequest.getId());
-        return deck.get();
+        Deck deck = deckRepository
+                .findById(deckRequest.getId())
+                .orElseThrow(() -> new NoCardFoundException("Nenhumca carta encontrada com o id: " + deckRequest.getId()));
+
+        if (!user.getId().equals(deck.getUser().getId())) {
+            throw new PermissionUnallowedException("Você não tem permissão para editar o deck de outro usuário");
+        }
+
+        if (!deckRequest.getName().isBlank()) {
+            deck.setName(deckRequest.getName());
+        }
+
+        if (!deckRequest.getCards().isEmpty()) {
+            deck.setCards(new ArrayList<Card>());
+            this.placeCards(deck, deckRequest);
+        }
+
+        return deckRepository.save(deck);
+    }
+
+    private void placeCards(Deck deck, DeckRequest deckRequest) {
+        for (Integer cardId : deckRequest.getCards()) {
+            try {
+                deck.addCard(cardService.getCardByIdAndUser(Long.valueOf(cardId), deckRequest.getUserId()));
+            } catch (NoCardFoundException e) {
+                logger.error(e.getMessage());
+            }
+        }
     }
 
     public List<Deck> listDecks() throws NoDeckFoundException {
-
-        return deckRepository.listAll().orElseThrow(() -> new NoDeckFoundException("Nenhum deck encontrado!"));
+        return deckRepository.findAllDecks().orElseThrow(() -> new NoDeckFoundException("Nenhum deck encontrado!"));
     }
 }
