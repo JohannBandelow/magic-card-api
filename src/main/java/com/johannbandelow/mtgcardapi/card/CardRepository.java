@@ -17,5 +17,5 @@ public interface CardRepository extends CrudRepository<Card, Integer> {
     Optional<Card> findById(Long cardId);
 
     @Query(value = "SELECT c FROM Card c WHERE c.user.id = :userId AND c.id = :cardId")
-    Optional<Card> findAllByIdAndUser(@Param("cardId") Long cardId, @Param("userId") Long userId);
+    Optional<Card> findByIdAndUser(@Param("cardId") Long cardId, @Param("userId") Long userId);
 }

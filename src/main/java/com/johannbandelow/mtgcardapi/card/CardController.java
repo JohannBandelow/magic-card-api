@@ -26,57 +26,49 @@ public class CardController {
 
     @GetMapping
     public ResponseEntity<?> getUserCards(@RequestParam Long userId) {
-        Optional<List<Card>> cards;
-
         try {
-            cards = cardService.getUserCards(userId);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(cardService.getUserCards(userId));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
         }
-
-        if (cards.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(cards.get());
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body("Nenhuma carta encontrada!");
     }
 
     @PostMapping(path = "/add")
     public Card addCardToUser(@RequestParam Long userId, @RequestBody Card card) {
-
         return cardService.addCardToUser(userId, card);
     }
 
-    @DeleteMapping(path = "/remove")
-    public ResponseEntity<?> removeCard(@RequestParam Long cardId, @RequestParam Long userId) {
-        Card card = null;
-
+    @DeleteMapping(path = "/remove/{cardId}/{userId}")
+    public ResponseEntity<?> removeCard(@PathVariable Long cardId, @PathVariable Long userId) {
         try {
-            card = cardService.removeCard(cardId, userId);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(cardService.removeCard(cardId, userId));
         } catch (Exception e) {
             logger.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
         }
-
-        return ResponseEntity.status(HttpStatus.OK).body(card);
     }
 
-    @GetMapping("/id")
-    public ResponseEntity<?> getCardById(@RequestParam Long cardId) {
-        Optional<Card> card;
-
+    @GetMapping("/{cardId}")
+    public ResponseEntity<?> getCardById(@PathVariable Long cardId) {
         try {
-            card = cardService.getCardById(cardId);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(cardService.getCardById(cardId));
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
         }
-
-        if (card.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(card.get());
-        }
-
-        return ResponseEntity.status(HttpStatus.OK).body("Nenhuma carta encontrada!");
     }
 }

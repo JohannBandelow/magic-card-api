@@ -28,16 +28,18 @@ public class CardService {
     private CardRepository cardRepository;
 
     @Transactional
-    public Optional<List<Card>> getUserCards(Long userId) throws NoUserFoundException, BadRequestException {
+    public List<Card> getUserCards(Long userId) throws NoUserFoundException, BadRequestException, NoCardFoundException {
         User user = userService.getUserById(userId);
 
-        return cardRepository.findCardsByUser(userId);
+        return cardRepository.findCardsByUser(userId).orElseThrow(() -> new NoCardFoundException("Nenhuma carta encontrada para o usuário: " + userId));
     }
 
     @Transactional
-    public Optional<Card> getCardById(Long cardId) throws NoUserFoundException {
+    public Card getCardById(Long cardId) throws NoCardFoundException {
 
-        return cardRepository.findById(Math.toIntExact(cardId));
+        return cardRepository
+                .findById(cardId)
+                .orElseThrow(() -> new NoCardFoundException("Carta não encontrada, id: " + cardId));
     }
 
     @Transactional
@@ -82,23 +84,20 @@ public class CardService {
 
     @Transactional
     public Card removeCard(Long cardId, Long userId) throws NoCardFoundException, PermissionUnallowedException {
-        Optional<Card> card = cardRepository.findById(cardId);
+        Card card = cardRepository.findById(cardId).orElseThrow(() -> new NoCardFoundException("Carta não encontrada! id: " + cardId));
 
-        if (card.isEmpty()) {
-            throw new NoCardFoundException("Carta não encontrada, id:" + cardId);
-        }
-
-        if (!card.get().getUser().getId().equals(userId)) {
+        if (!card.getUser().getId().equals(userId)) {
             throw new PermissionUnallowedException("Você não pode remover a carta de outro jogador!");
         }
 
         cardRepository.deleteById(cardId);
-
-        return card.get();
+        return card;
     }
 
-    public Optional<Card> getCardByIdAndUser(Long cardId, Long userId) {
+    public Card getCardByIdAndUser(Long cardId, Long userId) throws NoCardFoundException {
 
-        return cardRepository.findAllByIdAndUser(cardId, userId);
+        return cardRepository
+                .findByIdAndUser(cardId, userId)
+                .orElseThrow(() -> new NoCardFoundException("Nenhuma carta encontrada para o userId:" + userId + "e com o ID: " + cardId));
     }
 }

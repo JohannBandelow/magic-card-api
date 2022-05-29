@@ -4,6 +4,7 @@ import com.johannbandelow.mtgcardapi.card.Card;
 import com.johannbandelow.mtgcardapi.card.CardService;
 import com.johannbandelow.mtgcardapi.enums.SortTypeEnum;
 import com.johannbandelow.mtgcardapi.exceptions.BadRequestException;
+import com.johannbandelow.mtgcardapi.exceptions.NoCardFoundException;
 import com.johannbandelow.mtgcardapi.exceptions.NoDeckFoundException;
 import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
 import com.johannbandelow.mtgcardapi.sorter.AlphabeticalSorter;
@@ -46,53 +47,36 @@ public class DeckService {
             deck.setName(request.getName());
         }
 
-        if (request.getUserId() == null) {
-            throw new BadRequestException("ID do usuário não enviado");
-        }
+        deck.setUser(userService.getUserById(request.getUserId()));
 
-        User user = userService.getUserById(request.getUserId());
-        if (user == null) {
-            throw new NoUserFoundException("Usuário não encontrado, id:" + request.getUserId());
-        } else {
-            deck.setUser(user);
-        }
-
-        if(!request.getCards().isEmpty()) {
-            List<Card> cards = new ArrayList<Card>();
+        if (!request.getCards().isEmpty()) {
             for (Integer cardId : request.getCards()) {
-                Optional<Card> card = cardService.getCardByIdAndUser(Long.valueOf(cardId), request.getUserId());
-                if (card.isPresent()) {
-                    if (deck.getCards() == null) {
-                        cards.add(card.get());
-                    }
+                try {
+                    deck.addCard(cardService.getCardByIdAndUser(Long.valueOf(cardId), request.getUserId()));
+                } catch (NoCardFoundException e) {
+                    logger.error(e.getMessage());
                 }
             }
-            deck.setCards(cards);
         }
 
         return deckRepository.save(deck);
     }
 
-    public Deck getDeckById(DeckRequest request) throws NoDeckFoundException, BadRequestException {
-        if (request.getId() == null) {
+    public Deck getDeckById(Long deckId, SortTypeEnum sortTypeEnum) throws NoDeckFoundException, BadRequestException {
+        if (deckId == null) {
             throw new BadRequestException("ID do deck não enviado!");
         }
+        Deck deck = deckRepository
+                .findById(deckId)
+                .orElseThrow(() -> new NoDeckFoundException("Nenhum deck encontrado com o ID passado! ID: " + deckId));
 
-        Optional<Deck> optionalDeck = deckRepository.findById(request.getId());
-
-        if (optionalDeck.isPresent()) {
-            Deck deck = optionalDeck.get();
-
-            if (request.getSortType().equals(SortTypeEnum.VALUE)) {
-                deck.setCards(sorterService.sortCards(deck.getCards(), new PriceSorter()));
-            } else {
-                deck.setCards(sorterService.sortCards(deck.getCards(), new AlphabeticalSorter()));
-            }
-
-            return deck;
+        if (sortTypeEnum != null && sortTypeEnum.equals(SortTypeEnum.VALUE)) {
+            deck.setCards(sorterService.sortCards(deck.getCards(), new PriceSorter()));
         } else {
-            throw new NoDeckFoundException("Nenhum deck encontrado, id: " + request.getId());
+            deck.setCards(sorterService.sortCards(deck.getCards(), new AlphabeticalSorter()));
         }
+
+        return deck;
     }
 
     @Transactional
@@ -100,7 +84,11 @@ public class DeckService {
         User user = userService.getUserById(deckRequest.getUserId());
 
         Optional<Deck> deck = deckRepository.findById(deckRequest.getId());
-
         return deck.get();
+    }
+
+    public List<Deck> listDecks() throws NoDeckFoundException {
+
+        return deckRepository.listAll().orElseThrow(() -> new NoDeckFoundException("Nenhum deck encontrado!"));
     }
 }

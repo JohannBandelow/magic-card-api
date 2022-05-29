@@ -4,6 +4,7 @@ import com.johannbandelow.mtgcardapi.card.Card;
 import com.johannbandelow.mtgcardapi.user.User;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -27,6 +28,11 @@ public class Deck {
             joinColumns = @JoinColumn(name = "deck_id"),
             inverseJoinColumns = @JoinColumn(name = "card_id"))
     private List<Card> cards;
+
+    public Deck() {
+        this.user = new User();
+        this.cards = new ArrayList<>();
+    }
 
     public Long getId() {
         return id;
@@ -58,5 +64,9 @@ public class Deck {
 
     public void setCards(List<Card> cards) {
         this.cards = cards;
+    }
+
+    public void addCard(Card card) {
+        this.cards.add(card);
     }
 }

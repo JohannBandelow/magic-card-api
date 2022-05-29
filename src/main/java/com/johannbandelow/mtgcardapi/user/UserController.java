@@ -1,5 +1,7 @@
 package com.johannbandelow.mtgcardapi.user;
 
+import com.johannbandelow.mtgcardapi.exceptions.NoUserFoundException;
+import com.johannbandelow.mtgcardapi.exceptions.UserEmailAlreadyExists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,19 +22,21 @@ public class UserController {
     }
 
     @PostMapping(path="/create")
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(userService.createUser(user));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping
     @RequestMapping("/{userEmail}")
     public ResponseEntity<?> getUserByEmail(@PathVariable(value = "") String userEmail) {
-        User user = userService.getUserByEmail(userEmail);
-
-        if (user == null)  {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado, email: " + userEmail);
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(userService.getUserByEmail(userEmail));
+        } catch (NoUserFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-
-        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 }
