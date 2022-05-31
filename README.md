@@ -19,8 +19,11 @@ After the DB was created/configured, head on to application.properties and repla
 
 ## With everything configured you can run the MtgCardApiApplication.java
 
-## USERS
-### With the server running you can now create a User:
+## API ROUTES
+### You can download the Postman collection in the source files
+
+### USERS
+#### With the server running you can now create a User:
 
 URL: `POST: http://localhost:8080/api/user/create`
 
@@ -32,12 +35,12 @@ Body:
 
 > Two users cannot have the same email, only the first one will be created
 
-### Get user by userEmail
+#### Get user by userEmail
 
 URL: `GET: http://localhost:8080/api/user/{email}`
 
-## CARDS
-### With the user created you can start adding cards to the User inventory
+### CARDS
+#### With the user created you can start adding cards to the User inventory
 
 URL: `POST: http://localhost:8080/api/card/add?userId={userId}`
 
@@ -50,18 +53,18 @@ Body: `{
 
 > UserID must exist
 
-### Get cards from user
+#### Get cards from user
 
 URL: `GET: http://localhost:8080/api/card?userId={userId}`
 
 > UserID must exist
 
-### Remove card from user inventory
+#### Remove card from user inventory
 
 URL: `DELETE: http://localhost:8080/api/card/remove?cardId=6`
  
-## DECKS
-### Create a deck
+### DECKS
+#### Create a deck
 
 URL: `POST: http://localhost:8080/api/deck/create`
 
