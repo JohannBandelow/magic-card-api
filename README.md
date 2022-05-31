@@ -4,6 +4,7 @@ This is a simple API to register your Magic! The game cards, you can also create
 ## TODO LIST:
 - Add String translation on saving a foreign card
 - Deploy on cloud-service
+- Implement exceptionHandler for rest controller
 
 ## To use this API, first you need to configure your MySQL database:
 To create DB simply access your MySQL console, then:
